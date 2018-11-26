@@ -1,4 +1,4 @@
-# yer-Client
+# Project-Phones
 
 # Microservices with Docker, Flask, and React
-[![Build Status](https://travis-ci.com/yerman21/yer-app.svg?branch=master)](https://travis-ci.com/yerman21/yer-app)
+[![Build Status](https://travis-ci.com/yerman21/proyect_phones.svg?branch=master)](https://travis-ci.com/yerman21/proyect_phones)

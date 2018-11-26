@@ -23,7 +23,7 @@ const SmartphonesList = (props) => {
 							<td  className="">
 								<a idsmartphone={ smartphone.id } className="button is-danger">
 									<span className="icon has-text-danger">
-  										<i className="fas fa-ban">X</i>
+  										X
 									</span>
 								</a>								
 							</td>
