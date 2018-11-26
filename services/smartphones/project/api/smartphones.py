@@ -1,11 +1,15 @@
 # services/users/project/api/smartphones.py
-from flask import Blueprint, jsonify, request, render_template
-from sqlalchemy import exc , update
+# from flask import render_template
+from flask import Blueprint, jsonify, request
+# from sqlalchemy import update
+from sqlalchemy import exc
 from sqlalchemy.sql import func
 from project.api.models import Smartphone
 from project import db
 
-smartphones_blueprint = Blueprint("smartphones", __name__, template_folder='./templates')
+smartphones_blueprint = Blueprint("smartphones",
+                                  __name__,
+                                  template_folder='./templates')
 
 
 @smartphones_blueprint.route('/smartphones/ping', methods=['GET'])
@@ -28,16 +32,21 @@ def add_smartphones():
     name = post_data.get('name')
     brand = post_data.get('brand')
     price = post_data.get('price')
+    color = post_data.get('color')
+    quantity = post_data.get('quantity')
     try:
         smartphone = Smartphone.query.filter_by(name=name, brand=brand).first()
-        if not smartphone:            
-            db.session.add(Smartphone(name=name, brand=brand, price=price))
+        if not smartphone:
+            db.session.add(Smartphone(name=name, brand=brand, price=price,
+                                      color=color, quantity=quantity))
             db.session.commit()
             response_object['status'] = 'success'
-            response_object['message'] = f'{name}, marca {brand} a sido agregado!!'
+            response_object['message'] = f'{name}, '\
+                'marca {brand} a sido agregado!!'
             return jsonify(response_object), 201
         else:
-            response_object['message'] = 'Lo siento. Este smartphone ya existe.'
+            response_object['message'] = 'Lo siento. '\
+                'Este smartphone ya existe.'
             return jsonify(response_object), 400
     except exc.IntegrityError as e:
         db.session.rollback()
@@ -57,16 +66,21 @@ def update_smartphones():
     name = post_data.get('name')
     brand = post_data.get('brand')
     price = post_data.get('price')
+    color = post_data.get('color')
+    quantity = post_data.get('quantity')
     try:
-        smartphone = Smartphone.query.filter_by(id=int(idd)).first()                    
-        if not smartphone :
-            response_object['message'] = f'Lo siento. Este smartphone no existe.'
-            return jsonify(response_object), 400            
-        Smartphone.update().where(Smartphone.c.id==smartphone.id).\
-        values(name=name, brand=brand, price=price, modification_date=func.now())
-            
+        smartphone = Smartphone.query.filter_by(id=int(idd)).first()
+        if not smartphone:
+            response_object['message'] = f'Lo siento. '\
+                'Este smartphone no existe.'
+            return jsonify(response_object), 400
+        Smartphone.update().where(Smartphone.c.id == smartphone.id).\
+            values(name=name, brand=brand, price=price,
+                   color=color, quantity=quantity,
+                   modification_date=func.now())
         response_object['status'] = 'success'
-        response_object['message'] = f'{name}, marca {brand} a sido modificado!!'
+        response_object['message'] = f'{name}, marca '\
+            '{brand} a sido modificado!!'
         return jsonify(response_object), 201
     except exc.IntegrityError as e:
         db.session.rollback()
@@ -92,6 +106,8 @@ def get_single_smartphone(smartphone_id):
                     'name': smartphone.name,
                     'brand': smartphone.brand,
                     'price': smartphone.price,
+                    'color': smartphone.color,
+                    'quantity': smartphone.quantity,
                     'active': smartphone.active
                 }
             }
@@ -100,7 +116,8 @@ def get_single_smartphone(smartphone_id):
         return jsonify(response_object), 404
 
 
-@smartphones_blueprint.route('/smartphones/<int:smartphone_id>/delete', methods=['GET'])
+@smartphones_blueprint.route('/smartphones/<int:smartphone_id>/delete',
+                             methods=['GET'])
 def delete_single_smartphone(smartphone_id):
     """Eliminar un smartphone"""
     response_object = {
@@ -127,7 +144,9 @@ def get_all():
     response_object = {
         'status': 'success',
         'data': {
-            'smartphones': [smartphone.to_json() for smartphone in Smartphone.query.all()]
+            'smartphones': [smartphone.to_json()
+                            for smartphone
+                            in Smartphone.query.all()]
         }
     }
-    return jsonify(response_object), 200    
+    return jsonify(response_object), 200

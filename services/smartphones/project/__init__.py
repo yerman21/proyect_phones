@@ -12,14 +12,14 @@ def create_app(script_info=None):
     # instancia la app
     app = Flask(__name__)
     # enable CORS
-    CORS(app) # nuevo
+    CORS(app)
     # estableciendo configuracion
     app_settings = os.getenv("APP_SETTINGS")
     # app.config.from_object("project.config.DevelopmentConfig")
     app.config.from_object(app_settings)
     # print(app.config, file=sys.stderr)
 
-    # establece extensiones    
+    # establece extensiones
     db.init_app(app)
 
 #    from project.api.users import users_blueprint

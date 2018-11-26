@@ -4,7 +4,7 @@ const SmartphonesList = (props) => {
 	return (					
 				props.smartphones.map( (smartphone) => {
 					return (
-						<tr>
+						<tr key={ smartphone.id }>
 							<td  className="">
 								{ smartphone.name }
 							</td>
@@ -15,9 +15,15 @@ const SmartphonesList = (props) => {
 								{ smartphone.price }
 							</td>
 							<td  className="">
-								<a idsmartphone={ smartphone.id } class="button is-danger">
-									<span class="icon has-text-danger">
-  										<i class="fas fa-ban"></i>
+								{ smartphone.color }
+							</td>
+							<td  className="">
+								{ smartphone.quantity }
+							</td>
+							<td  className="">
+								<a idsmartphone={ smartphone.id } className="button is-danger">
+									<span className="icon has-text-danger">
+  										<i className="fas fa-ban">X</i>
 									</span>
 								</a>								
 							</td>

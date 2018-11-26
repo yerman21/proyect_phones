@@ -15,6 +15,14 @@ const AddSmartphone = (props) => {
 				<input name="price" className="input is-large" type="number" 
 				placeholder="Enter an price" value={ props.price } onChange={props.handleChange} required/>
 			</div>
+			<div className="field">
+				<input name="color" className="input is-large" type="text" 
+				placeholder="Enter an color" value={ props.color } onChange={props.handleChange} required/>
+			</div>
+			<div className="field">
+				<input name="quantity" className="input is-large" type="number" 
+				placeholder="Enter an quantity" value={ props.quantity } onChange={props.handleChange} required/>
+			</div>
 				<input type="submit" className="button is-primary is-large is-fullwidth"
 				value="Enviar" />
 		</form>

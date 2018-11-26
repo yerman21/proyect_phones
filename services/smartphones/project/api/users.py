@@ -88,4 +88,4 @@ def get_all_users():
             'users': [user.to_json() for user in User.query.all()]
         }
     }
-    return jsonify(response_object), 200    
+    return jsonify(response_object), 200

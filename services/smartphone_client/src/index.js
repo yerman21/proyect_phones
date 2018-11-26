@@ -14,6 +14,8 @@ class App extends Component {
 			name: '',
 			brand: '',
 			price: '',
+			color: '',
+			quantity: ''
 		};
 		// limitamos el contexto de this de forma manual a travès de bind()
 		this.addSmartphone = this.addSmartphone.bind(this); //new
@@ -33,7 +35,7 @@ class App extends Component {
 							
 							<h1 className="title is-1">Todos los Smartphones</h1>
 							
-							<AddSmartphone name={ this.state.name } brand={ this.state.brand } price={ this.state.price } addSmartphone={ this.addSmartphone } handleChange={ this.handleChange } />							
+							<AddSmartphone name={ this.state.name } brand={ this.state.brand } price={ this.state.price } color={ this.state.color } quantity={ this.state.quantity } addSmartphone={ this.addSmartphone } handleChange={ this.handleChange } />
 						</div>
 						<div className="column is-half">
 							<table className="table is-half is-hoverable is-responsive">
@@ -42,10 +44,11 @@ class App extends Component {
 								<td>Smartphone</td>
 								<td>Marca</td>
 								<td>Precio</td>
+								<td>Color</td>
+								<td>Cantidad</td>
 								<td>Acciones</td>
 							</tr>
-							</thead>
-							
+							</thead>							
 							<tbody>
 								<SmartphonesList smartphones={ this.state.smartphones } />	
 							</tbody>
@@ -70,12 +73,14 @@ class App extends Component {
 			name: this.state.name,
 			brand: this.state.brand,
 			price: this.state.price,
+			color: this.state.color,
+			quantity: this.state.quantity,
 		};
 		axios.post(`${process.env.REACT_APP_PHONES_SERVICE_URL}/smartphones`, data)
 		.then( (res) => { 
 			console.log(res); 
 			this.getSmartphones();
-			this.setState({ name: '', brand: '', price: '' });			
+			this.setState({ name: '', brand: '', price: '', color: '', quantity: '' });
 		})
 		.catch( (err) => {console.log(err); });
 //		console.log('Sanity check!');

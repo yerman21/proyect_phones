@@ -39,8 +39,8 @@ def test():
 @cli.command()
 def seed_db():
 	"""Sembrando la base de datos."""
-	db.session.add(Smartphone(name='Samsung J2',brand='Samsung Galaxy',price=1200))
-	db.session.add(Smartphone(name='Nokia 360',brand='Nokia',price=300))
+	db.session.add(Smartphone(name='Samsung J2',brand='Samsung Galaxy',price=1200, color='Amarillo', quantity=10))
+	db.session.add(Smartphone(name='Nokia 360',brand='Nokia',price=300, color='Verde', quantity=10))
 	db.session.commit()
 
 @cli.command()

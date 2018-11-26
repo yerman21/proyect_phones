@@ -29,15 +29,21 @@ class Smartphone(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(128), nullable=False)
     brand = db.Column(db.String(128), nullable=False)
-    price = db.Column(db.Float(4,0), nullable=False)
+    price = db.Column(db.Float(4), nullable=False)
+    color = db.Column(db.String(128), nullable=False)
+    quantity = db.Column(db.Float(2), nullable=False)
     creation_date = db.Column(db.DateTime, default=func.now(), nullable=False)
-    modification_date = db.Column(db.DateTime, default=func.now(), nullable=True)
+    modification_date = db.Column(db.DateTime,
+                                  default=func.now(),
+                                  nullable=True)
     active = db.Column(db.Boolean(), default=True, nullable=False)
 
-    def __init__(self, name, brand, price):
+    def __init__(self, name, brand, price, color, quantity):
         self.name = name
         self.brand = brand
         self.price = price
+        self.color = color
+        self.quantity = quantity
 
     def to_json(self):
         return {
@@ -45,5 +51,7 @@ class Smartphone(db.Model):
             'name': self.name,
             'brand': self.brand,
             'price': self.price,
+            'color': self.color,
+            'quantity': self.quantity,
             'active': self.active
         }
