@@ -1,0 +1,55 @@
+version: '3.6'
+
+services:
+
+  smartphones:
+    build:
+      context: ./services/smartphones
+      dockerfile: Dockerfile-dev
+    volumes:
+      - './services/smartphones:/usr/src/app'
+    ports:
+      - 5001:5000
+    environment:      
+      - FLASK_ENV=development
+      - APP_SETTINGS=project.config.DevelopmentConfig
+      - DATABASE_URL=postgres://postgres:postgres@smartphones-db:5432/smartphone_dev 
+      - DATABASE_TEST_URL=postgres://postgres:postgres@smartphones-db:5432/smartphone_test  
+    depends_on: 
+      - smartphones-db
+
+  smartphones-db:  
+    build:
+      context: ./services/smartphones/project/db
+      dockerfile: Dockerfile
+    ports:
+      - 5435:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+
+  nginx:
+    build:
+      context: ./services/nginx
+      dockerfile: Dockerfile-dev
+    restart: always
+    ports:
+      - 80:80
+    depends_on:
+      - smartphones
+      - smartphone-client
+
+  smartphone-client:
+    build:
+      context: ./services/smartphone_client
+      dockerfile: Dockerfile-dev
+    volumes:
+      - './services/smartphone_client:/usr/src/app'
+      - './usr/src/app/node_modules'
+    ports:
+      - 3007:3000
+    environment:
+      - NODE_ENV=development
+      - REACT_APP_PHONES_SERVICE_URL=${REACT_APP_PHONES_SERVICE_URL}
+    depends_on:
+    - smartphones
