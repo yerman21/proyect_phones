@@ -178,6 +178,42 @@ class TestSmartphoneService(BaseTestCase):
                 'Nokia', data['data']['smartphones'][1]['brand'])
             self.assertIn('success', data['status'])
 
+    def test_main_with_users(self):
+        """Ensure the main route behaves correctly when smartphones have been
+        added to the database."""
+        add_smartphone('Nokia 0', 'Nokia', 900, 'Azul', 2)
+        add_smartphone('Motorl d30', 'Motorola', 1000, 'Azul', 2)
+        with self.client:
+            response = self.client.get('/jinga')
+            self.assertEqual(response.status_code, 200)
+            self.assertIn(b'All Smartphones', response.data)
+            self.assertNotIn(b'<p>No Smartphones!</p>', response.data)
+            self.assertIn(b'Nokia 0', response.data)
+            self.assertIn(b'Motorl d30', response.data)
+
+    def test_main_no_smartphones(self):
+        """Ensure the main route behaves correctly when
+        no smartphones have been added to the database."""
+        response = self.client.get('/jinga')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'All Smartphones', response.data)
+        self.assertIn(b'<p>No Smartphones!</p>', response.data)
+
+    def test_main_add_smartphone(self):
+        """Ensure a new smartphone can be added to the database."""
+        with self.client:
+            response = self.client.post(
+                '/jinga',
+                data=dict(name='iPhone X', brand='Apple',
+                          price=320, color='blanco',
+                          quantity=290),
+                follow_redirects=True
+            )
+            self.assertEqual(response.status_code, 200)
+            self.assertIn(b'All Smartphones', response.data)
+            self.assertNotIn(b'<p>No Smartphones!</p>', response.data)
+            self.assertIn(b'iPhone X', response.data)
+
 
 if __name__ == '__main__':
     unittest.main()

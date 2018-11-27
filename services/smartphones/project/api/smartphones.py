@@ -1,6 +1,5 @@
 # services/users/project/api/smartphones.py
-# from flask import render_template
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, render_template
 # from sqlalchemy import update
 from sqlalchemy import exc
 from sqlalchemy.sql import func
@@ -10,6 +9,21 @@ from project import db
 smartphones_blueprint = Blueprint("smartphones",
                                   __name__,
                                   template_folder='./templates')
+
+
+@smartphones_blueprint.route('/jinga', methods=['GET', 'POST'])
+def index():
+    if request.method == 'POST':
+        name = request.form['name']
+        brand = request.form['brand']
+        price = request.form['price']
+        color = request.form['color']
+        quantity = request.form['quantity']
+        db.session.add(Smartphone(name=name, brand=brand, price=price,
+                                  color=color, quantity=quantity))
+        db.session.commit()
+    smartphones = Smartphone.query.all()
+    return render_template('index.html', smartphones=smartphones)
 
 
 @smartphones_blueprint.route('/smartphones/ping', methods=['GET'])
