@@ -45,7 +45,6 @@ services:
       dockerfile: Dockerfile-dev
     volumes:
       - './services/smartphone_client:/usr/src/app'
-      - './usr/src/app/node_modules'
     ports:
       - 3007:3000
     environment:
