@@ -2,7 +2,7 @@
 import unittest
 from flask.cli import FlaskGroup
 from project import create_app, db
-from project.api.models import Smartphone, User
+from project.api.models import Smartphone, User, Persona
 import coverage
 
 #configurando informes de covertura con coverage 4.5.1
@@ -39,8 +39,10 @@ def test():
 @cli.command()
 def seed_db():
 	"""Sembrando la base de datos."""
-	db.session.add(Smartphone(name='Samsung J2',brand='Samsung Galaxy',price=1200, color='Amarillo', quantity=10))
-	db.session.add(Smartphone(name='Nokia 360',brand='Nokia',price=300, color='Verde', quantity=10))
+	db.session.add(Persona(name='Yerman',lastname='Aguirre',age=22, gender='M'))
+	db.session.add(Persona(name='Deyvis',lastname='Garcia',age=23, gender='M'))
+	db.session.add(Smartphone(name='Samsung J2',brand='Samsung Galaxy',price=1200, color='Amarillo', quantity=10, propietario=1))
+	db.session.add(Smartphone(name='Nokia 360',brand='Nokia',price=300, color='Verde', quantity=10, propietario=1))
 	db.session.commit()
 
 @cli.command()

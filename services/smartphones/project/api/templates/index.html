@@ -5,7 +5,7 @@
 	<meta name="description" content="">
 	<meta name="author" content="">
 	<meta mame="viewport" content="width=device-width,initial-scale=1">
-	<!-- styles -->
+
 	<link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.7.1/css/bulma.min.css">
 
 	{% block css %}{% endblock %}
@@ -15,9 +15,20 @@
       <div class="column is-one-third">
         <br>
         <h1 class="title">All Smartphones</h1>
+        <hr><br>        
+        <button id="btn_add_persona" type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal_persona">Add Persona</button>
         <hr><br>
-        <form action="/" method="POST">
+        <form action="/smartphones/jinga/index" method="POST">
           <div class="field">
+            <select id="propietario" name="propietario">
+            {% if personas %}            
+              {% for persona in personas %}
+                  <option value={{ persona.id }}>{{ persona.name }} {{ persona.lastname }}</option>
+              {% endfor %}                
+            {% else %}
+                <p>No Personas!</p>
+            {% endif %}
+            </select>
             <input name="name" class="input is-large" type="text" 
             placeholder="Enter a name smartphone" required/>
           </div>
@@ -27,7 +38,7 @@
           </div>
           <div class="field">
             <input name="price" class="input is-large" type="number" 
-            placeholder="Enter an price" required/>
+            placeholder="Enter your  price" required/>
           </div>
           <div class="field">
             <input name="color" class="input is-large" type="text" 
@@ -36,7 +47,7 @@
           <div class="field">
             <input name="quantity" class="input is-large" type="number" 
             placeholder="Enter an quantity" required/>
-          </div>
+          </div>                
           <input
             type="submit" class="button is-primary is-fullwidth"
             value="Submit">
@@ -52,10 +63,7 @@
           {% else %}
             <p>No Smartphones!</p>
           {% endif %}
-        </div>
-      </div>
-    </div>
-    </script>
+        </div>        
     {% block js %}{% endblock %}
 </body>
 </html>

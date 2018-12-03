@@ -2,8 +2,8 @@
 from flask import Blueprint, jsonify, request, render_template
 # from sqlalchemy import update
 from sqlalchemy import exc
-from sqlalchemy.sql import func
-from project.api.models import Smartphone
+# from sqlalchemy.sql import func
+from project.api.models import Smartphone, Persona
 from project import db
 
 smartphones_blueprint = Blueprint("smartphones",
@@ -11,7 +11,8 @@ smartphones_blueprint = Blueprint("smartphones",
                                   template_folder='./templates')
 
 
-@smartphones_blueprint.route('/jinga', methods=['GET', 'POST'])
+@smartphones_blueprint.route('/smartphones/jinga/index',
+                             methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
         name = request.form['name']
@@ -19,11 +20,34 @@ def index():
         price = request.form['price']
         color = request.form['color']
         quantity = request.form['quantity']
-        db.session.add(Smartphone(name=name, brand=brand, price=price,
-                                  color=color, quantity=quantity))
-        db.session.commit()
+        if request.form['propietario']:
+            propietario = request.form['propietario']
+            db.session.add(Smartphone(name=name, brand=brand, price=price,
+                                      color=color, quantity=quantity,
+                                      propietario=propietario))
+        else:
+            db.session.add(Smartphone(name=name, brand=brand, price=price,
+                                      color=color, quantity=quantity))
+            db.session.commit()
     smartphones = Smartphone.query.all()
-    return render_template('index.html', smartphones=smartphones)
+    personas = Persona.query.all()
+    return render_template('index.html', smartphones=smartphones,
+                           personas=personas)
+
+
+@smartphones_blueprint.route('/smartphones/jinga/persona',
+                             methods=['GET', 'POST'])
+def persona_view():
+    if request.method == 'POST':
+        name = request.form['name']
+        lastname = request.form['lastname']
+        age = request.form['age']
+        gender = request.form['gender']
+        db.session.add(Persona(name=name, lastname=lastname, age=age,
+                               gender=gender))
+        db.session.commit()
+    personas = Persona.query.all()
+    return render_template('addPersona.html', personas=personas)
 
 
 @smartphones_blueprint.route('/smartphones/ping', methods=['GET'])
@@ -48,15 +72,25 @@ def add_smartphones():
     price = post_data.get('price')
     color = post_data.get('color')
     quantity = post_data.get('quantity')
+    propietario = post_data.get('propietario')
     try:
         smartphone = Smartphone.query.filter_by(name=name, brand=brand).first()
         if not smartphone:
-            db.session.add(Smartphone(name=name, brand=brand, price=price,
-                                      color=color, quantity=quantity))
+            if propietario:
+                db.session.add(Smartphone(name=name, brand=brand,
+                                          price=price, color=color,
+                                          quantity=quantity,
+                                          propietario=propietario))
+                response_object['message'] = f'{name}, marca {brand} a sido '\
+                                             'agregado con propietario!!'
+            else:
+                db.session.add(Smartphone(name=name, brand=brand,
+                                          price=price, color=color,
+                                          quantity=quantity))
+                response_object['message'] = f'{name}, marca {brand} a sido '\
+                                             'agregado sin propietario!!'
             db.session.commit()
             response_object['status'] = 'success'
-            response_object['message'] = f'{name}, '\
-                'marca {brand} a sido agregado!!'
             return jsonify(response_object), 201
         else:
             response_object['message'] = 'Lo siento. '\
@@ -67,7 +101,7 @@ def add_smartphones():
         return jsonify(response_object), 400
 
 
-@smartphones_blueprint.route('/smartphones/update', methods=['POST'])
+"""@smartphones_blueprint.route('/smartphones/update', methods=['POST'])
 def update_smartphones():
     post_data = request.get_json()
     response_object = {
@@ -101,7 +135,30 @@ def update_smartphones():
         return jsonify(response_object), 400
 
 
-@smartphones_blueprint.route('/smartphones/<smartphone_id>', methods=['GET'])
+@smartphones_blueprint.route('/smartphones/<int:smartphone_id>/delete',
+                             methods=['GET'])
+def delete_single_smartphone(smartphone_id):
+    response_object = {
+        'status': 'fail',
+        'message': 'el smartphone no existe'
+    }
+    try:
+        smartphone = Smartphone.query.filter_by(id=int(smartphone_id)).delete()
+        if not smartphone:
+            return jsonify(response_object), 404
+        else:
+            response_object = {
+                'status': 'success',
+                'message': 'el smartphone fue eliminado.'
+            }
+            return jsonify(response_object), 200
+    except ValueError:
+        return jsonify(response_object), 404
+"""
+
+
+@smartphones_blueprint.route('/smartphones/<smartphone_id>',
+                             methods=['GET'])
 def get_single_smartphone(smartphone_id):
     """Obtener detalles de smartphone unico"""
     response_object = {
@@ -130,22 +187,29 @@ def get_single_smartphone(smartphone_id):
         return jsonify(response_object), 404
 
 
-@smartphones_blueprint.route('/smartphones/<int:smartphone_id>/delete',
+@smartphones_blueprint.route('/smartphones/persona/<int:persona_id>',
                              methods=['GET'])
-def delete_single_smartphone(smartphone_id):
-    """Eliminar un smartphone"""
+def get_single_persona(persona_id):
+    """Obtener detalles de Person unico"""
     response_object = {
         'status': 'fail',
-        'message': 'el smartphone no existe'
+        'message': 'la persona no existe'
     }
     try:
-        smartphone = Smartphone.query.filter_by(id=int(smartphone_id)).delete()
-        if not smartphone:
+        persona = Persona.query.filter_by(id=int(persona_id)).first()
+        if not persona:
             return jsonify(response_object), 404
         else:
             response_object = {
                 'status': 'success',
-                'message': 'el smartphone fue eliminado.'
+                'data': {
+                    'id': persona.id,
+                    'name': persona.name,
+                    'lastname': persona.lastname,
+                    'age': persona.age,
+                    'gender': persona.gender,
+                    'active': persona.active
+                }
             }
             return jsonify(response_object), 200
     except ValueError:
@@ -164,3 +228,53 @@ def get_all():
         }
     }
     return jsonify(response_object), 200
+
+
+@smartphones_blueprint.route('/smartphones/personas/all',
+                             methods=['GET'])
+def get_allPersonas():
+    """Obteniendo todos las Personas"""
+    response_object = {
+        'status': 'success',
+        'data': {
+            'personas': [personas.to_json()
+                         for personas
+                         in Persona.query.all()]
+        }
+    }
+    return jsonify(response_object), 200
+
+
+@smartphones_blueprint.route('/smartphones/personas/<int:id_persona>/telefono',
+                             methods=['GET'])
+def get_all_personas_phones(id_persona):
+    """Obteniendo las Personas con sus telefonos"""
+    lista_con_smartphone = Smartphone.query.join(Persona).add_columns(
+        Persona.lastname,
+        Persona.age,
+        Persona.gender,
+        Smartphone.name,
+        Smartphone.brand,
+        Smartphone.price,
+        Smartphone.color).filter(Smartphone.propietario == id_persona)
+    response_object = {
+                'status': 'success',
+                'data': {
+                    'misCelulares': [convert_json(smartphone)
+                                     for smartphone
+                                     in lista_con_smartphone]
+                }
+    }
+    return jsonify(response_object), 200
+
+
+def convert_json(smartphone_lista):
+    return {
+            'lastname': smartphone_lista.lastname,
+            'age': smartphone_lista.age,
+            'gender': smartphone_lista.gender,
+            'name': smartphone_lista.name,
+            'brand': smartphone_lista.brand,
+            'price': smartphone_lista.price,
+            'color': smartphone_lista.color
+        }

@@ -24,6 +24,37 @@ class User(db.Model):
         }
 
 
+class Persona(db.Model):
+    __tablename__ = 'personas'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(128), nullable=False)
+    lastname = db.Column(db.String(128), nullable=False)
+    age = db.Column(db.Float(2), nullable=False)
+    gender = db.Column(db.String(1), nullable=False)
+    smartphones = db.relationship('Smartphone')
+    creation_date = db.Column(db.DateTime, default=func.now(), nullable=False)
+    modification_date = db.Column(db.DateTime,
+                                  default=func.now(),
+                                  nullable=True)
+    active = db.Column(db.Boolean(), default=True, nullable=False)
+
+    def __init__(self, name, lastname, age, gender):
+        self.name = name
+        self.lastname = lastname
+        self.age = age
+        self.gender = gender
+
+    def to_json(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'lastname': self.lastname,
+            'age': self.age,
+            'gender': self.gender,
+            'active': self.active
+        }
+
+
 class Smartphone(db.Model):
     __tablename__ = 'smartphones'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -32,18 +63,16 @@ class Smartphone(db.Model):
     price = db.Column(db.Float(4), nullable=False)
     color = db.Column(db.String(128), nullable=False)
     quantity = db.Column(db.Float(2), nullable=False)
+    propietario = db.Column(db.Integer, db.ForeignKey('personas.id'))
     creation_date = db.Column(db.DateTime, default=func.now(), nullable=False)
     modification_date = db.Column(db.DateTime,
                                   default=func.now(),
                                   nullable=True)
     active = db.Column(db.Boolean(), default=True, nullable=False)
 
-    def __init__(self, name, brand, price, color, quantity):
-        self.name = name
-        self.brand = brand
-        self.price = price
-        self.color = color
-        self.quantity = quantity
+    def __init__(self, **kwargs):
+        super(Smartphone, self).__init__(**kwargs)
+        # do custom initialization here
 
     def to_json(self):
         return {
@@ -52,6 +81,7 @@ class Smartphone(db.Model):
             'brand': self.brand,
             'price': self.price,
             'color': self.color,
+            'propietario': self.propietario,
             'quantity': self.quantity,
             'active': self.active
         }
