@@ -11,14 +11,25 @@ class App extends Component {
 		// nuevo
 		this.state = {
 			smartphones: [],
-			name: '',
-			brand: '',
-			price: '',
-			color: '',
-			quantity: ''
+			personas: [],
+			smartphone: {
+				name: '',
+				brand: '',
+				price: '',
+				color: '',
+				quantity: '',
+				propietario: ''
+			},
+			persona: {
+				name: '',
+				lastname: '',
+				age: '',
+				gender: ''				
+			}
+			
 		};
 		// limitamos el contexto de this de forma manual a travès de bind()
-		this.addSmartphone = this.addSmartphone.bind(this); //new
+		this.addSmartphone = this.addSmartphone.bind(this);
 		this.handleChange = this.handleChange.bind(this);
 	}
 
@@ -35,11 +46,11 @@ class App extends Component {
 							
 							<h1 className="title is-1">Todos los Smartphones</h1>
 							
-							<AddSmartphone name={ this.state.name } brand={ this.state.brand } price={ this.state.price } color={ this.state.color } quantity={ this.state.quantity } addSmartphone={ this.addSmartphone } handleChange={ this.handleChange } />
+							<AddSmartphone personas={ this.state.personas } name={ this.state.smartphone.name } brand={ this.state.smartphone.brand } price={ this.state.smartphone.price } color={ this.state.smartphone.color } quantity={ this.state.smartphone.quantity } addSmartphone={ this.addSmartphone } handleChange={ this.handleChange } />
 						</div>
 						<div className="column is-half">
 							<table className="table is-half is-hoverable is-responsive">
-							<thead>							
+							<thead>
 							<tr>
 								<td>Smartphone</td>
 								<td>Marca</td>
@@ -50,9 +61,15 @@ class App extends Component {
 							</tr>
 							</thead>							
 							<tbody>
-								<SmartphonesList smartphones={ this.state.smartphones } />	
+								<SmartphonesList smartphones={ this.state.smartphones } />
 							</tbody>
 							</table>
+						</div>
+					</div>
+					<div className="columns is-multiline is-mobile">
+						<div className="column is-half">
+							<h1 className="title is-1">Todas las Personas</h1>
+							<AddPersona name={ this.state.persona.name } lastname={ this.state.persona.lastname } age={ this.state.persona.age } gender={ this.state.persona.gender } addPersona={ this.addPersona } handleChange={ this.handleChange } />
 						</div>
 					</div>
 				</div>
@@ -61,8 +78,14 @@ class App extends Component {
 	}
 
 	getSmartphones(){
-		axios.get(`${process.env.REACT_APP_PHONES_SERVICE_URL}/smartphones`)
-		.then((res) => { this.setState({ smartphones: res.data.data.smartphones }); })
+		axios.get(`${process.env.REACT_APP_PHONES_SERVICE_URL}/smartphones/personas/all/telefono`)
+		.then((res) => { this.setState({ smartphones: res.data.data.misCelulares }); })
+		.catch((err) => { console.log(err); });
+	}
+
+	getPersonas(){
+		axios.get(`${process.env.REACT_APP_PHONES_SERVICE_URL}/smartphones/personas/all`)
+		.then((res) => { this.setState({ personas: res.data.data.personas }); })
 		.catch((err) => { console.log(err); });
 	}
 
@@ -70,17 +93,18 @@ class App extends Component {
 		event.preventDefault();
 
 		const data = {
-			name: this.state.name,
-			brand: this.state.brand,
-			price: this.state.price,
-			color: this.state.color,
-			quantity: this.state.quantity,
+			name: this.state.smartphone.name,
+			brand: this.state.smartphone.brand,
+			price: this.state.smartphone.price,
+			color: this.state.smartphone.color,
+			quantity: this.state.smartphone.quantity,
+			propietario: this.state.smartphone.propietario,
 		};
 		axios.post(`${process.env.REACT_APP_PHONES_SERVICE_URL}/smartphones`, data)
 		.then( (res) => { 
 			console.log(res); 
 			this.getSmartphones();
-			this.setState({ name: '', brand: '', price: '', color: '', quantity: '' });
+			this.setState({smartphone:{ name: '', brand: '', price: '', color: '', quantity: '', propietario: ''}});
 		})
 		.catch( (err) => {console.log(err); });
 //		console.log('Sanity check!');

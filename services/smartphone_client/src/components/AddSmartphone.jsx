@@ -4,6 +4,19 @@ const AddSmartphone = (props) => {
 	return (
 		<form onSubmit={ (event) => props.addSmartphone(event) }>
 			<div className="field">
+				<select name="propietario">
+
+				props.personas.map( (persona) => {
+					return (
+						<option value={ persona.id }>
+							{ persona.name } { persona.lastname }
+						</option>						
+						)
+				})
+				
+				</select>				
+			</div>
+			<div className="field">
 				<input name="name" className="input is-large" type="text" 
 				placeholder="Enter a name smartphone" value={ props.name } onChange={props.handleChange} required/>
 			</div>

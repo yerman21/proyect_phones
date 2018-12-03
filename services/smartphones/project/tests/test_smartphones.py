@@ -253,8 +253,8 @@ class TestSmartphoneService(BaseTestCase):
                 'Gune', data['data']['personas'][1]['lastname'])
             self.assertIn('success', data['status'])
 
-    def test_all_personas_relations(self):
-        """Asegurando de que todos las personas que tengan celulares
+    def test_one_personas_relations(self):
+        """Asegurando de que una de las personas que tengan celulares
         se comporten correctamente"""
         persona = add_persona('Maria', 'Guzman', 23, 'F')
         add_smartphone_with_propietario('Nokia 90', 'Nokia',
@@ -276,6 +276,31 @@ class TestSmartphoneService(BaseTestCase):
             self.assertIn('Nokia 90', data['data']['misCelulares'][0]['name'])
             self.assertIn(
                 'Nokia 100', data['data']['misCelulares'][1]['name'])
+            self.assertIn('success', data['status'])
+
+    def test_all_personas_relations(self):
+        """Asegurando de que todos las personas que tengan celulares
+        se comporten correctamente"""
+        persona = add_persona('Maria', 'Guzman', 23, 'F')
+        add_smartphone_with_propietario('Nokia 98', 'Nokia',
+                                        800, 'Ginda', 10,
+                                        persona.id)
+        add_smartphone_with_propietario('Nokia 10', 'Nokia',
+                                        1000, 'Celeste',
+                                        2, persona.id)
+        with self.client:
+            response = self.client.get(f'/smartphones/personas/all'
+                                       '/telefono')
+            data = json.loads(response.data.decode())
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(len(data['data']['misCelulares']), 2)
+            self.assertIn('Guzman',
+                          data['data']['misCelulares'][0]['lastname'])
+            self.assertIn(
+                'F', data['data']['misCelulares'][0]['gender'])
+            self.assertIn('Nokia 98', data['data']['misCelulares'][0]['name'])
+            self.assertIn(
+                'Nokia 10', data['data']['misCelulares'][1]['name'])
             self.assertIn('success', data['status'])
 
     def test_main_with_users(self):

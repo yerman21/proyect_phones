@@ -247,7 +247,7 @@ def get_allPersonas():
 
 @smartphones_blueprint.route('/smartphones/personas/<int:id_persona>/telefono',
                              methods=['GET'])
-def get_all_personas_phones(id_persona):
+def get_one_personas_phones(id_persona):
     """Obteniendo las Personas con sus telefonos"""
     lista_con_smartphone = Smartphone.query.join(Persona).add_columns(
         Persona.lastname,
@@ -257,6 +257,29 @@ def get_all_personas_phones(id_persona):
         Smartphone.brand,
         Smartphone.price,
         Smartphone.color).filter(Smartphone.propietario == id_persona)
+    response_object = {
+                'status': 'success',
+                'data': {
+                    'misCelulares': [convert_json(smartphone)
+                                     for smartphone
+                                     in lista_con_smartphone]
+                }
+    }
+    return jsonify(response_object), 200
+
+
+@smartphones_blueprint.route('/smartphones/personas/all/telefono',
+                             methods=['GET'])
+def get_all_personas_phones():
+    """Obteniendo todas las Personas con sus telefonos"""
+    lista_con_smartphone = Smartphone.query.join(Persona).add_columns(
+        Persona.lastname,
+        Persona.age,
+        Persona.gender,
+        Smartphone.name,
+        Smartphone.brand,
+        Smartphone.price,
+        Smartphone.color).order_by(Smartphone.id)
     response_object = {
                 'status': 'success',
                 'data': {

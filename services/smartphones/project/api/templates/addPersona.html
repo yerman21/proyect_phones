@@ -1,0 +1,52 @@
+<html>
+<head>
+	<title>Flask on Docker</title>
+	<!-- meta -->
+	<meta name="description" content="">
+	<meta name="author" content="">
+	<meta mame="viewport" content="width=device-width,initial-scale=1">
+
+	<link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.7.1/css/bulma.min.css">
+
+	{% block css %}{% endblock %}
+</head>
+<body>
+	<div class="container">
+      <div class="column is-one-third">
+        <br>
+        <h1 class="title">Add Persona</h1>       
+        <hr><br>
+        <form action="/smartphones/jinga/persona" method="POST">
+          <div class="field">          	
+            <input name="name" class="input is-large" type="text" 
+            placeholder="Enter a name" required/>
+          </div>
+          <div class="field">
+            <input name="lastname" class="input is-large" type="text" 
+            placeholder="Enter an lastname" required/>
+          </div>
+          <div class="field">
+            <input name="age" class="input is-large" type="number" 
+            placeholder="Enter an age" required/>
+          </div>
+          <div class="field">
+            <input name="gender" class="input is-large" type="text" 
+            placeholder="Enter an gender" required/>
+          </div>          
+          <input
+            type="submit" class="button is-primary is-fullwidth"
+            value="Submit">
+        </form>
+        <br>
+        <hr>
+           {% if personas %}            
+              {% for persona in personas %}
+                  {{ persona.name }} {{ persona.lastname }}
+              {% endfor %}                
+            {% else %}
+                <p>No Personas!</p>
+            {% endif %}
+        </div>        
+    {% block js %}{% endblock %}
+</body>
+</html>
